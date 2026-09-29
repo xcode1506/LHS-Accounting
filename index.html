@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LHS Business Monitoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#0F0E0C;
+  --bg-1:#16140F;
+  --bg-2:#1C1A15;
+  --bg-3:#23201A;
+  --bg-4:#2A261F;
+  --border:#2E2A22;
+  --border-hi:#3D372C;
+  --text-0:#F5F0E6;
+  --text-1:#B8B0A0;
+  --text-2:#7A7266;
+  --text-3:#4A453C;
+  --amber:#C8964A;
+  --amber-hi:#E0A957;
+  --amber-lo:#8B6A33;
+  --amber-bg:rgba(200,150,74,.08);
+  --success:#7A9A6A;
+  --success-bg:rgba(122,154,106,.12);
+  --danger:#B8574A;
+  --danger-bg:rgba(184,87,74,.12);
+  --warn:#C9A227;
+  --warn-bg:rgba(201,162,39,.12);
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:0 4px 12px rgba(0,0,0,.35);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-feature-settings:'cv11','ss01';
+  background:var(--bg-0);
+  color:var(--text-0);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ============ LAYOUT ============ */
+.app{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  grid-template-rows:56px 1fr;
+  grid-template-areas:"header header" "sidebar main";
+  min-height:100vh;
+}
+
+/* ============ TOPBAR ============ */
+.topbar{
+  grid-area:header;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  background:var(--bg-1);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand-mark{
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--amber),var(--amber-lo));
+  border-radius:6px;
+  color:var(--bg-0);
+  font-family:'Instrument Serif',serif;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:-.5px;
+  box-shadow:0 2px 8px rgba(200,150,74,.2);
+}
+.brand-name{
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:-.1px;
+  color:var(--text-0);
+}
+.brand-sub{
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-2);
+  margin-top:1px;
+}
+
+/* ============ SIDEBAR ============ */
+.sidebar{
+  grid-area:sidebar;
+  background:var(--bg-1);
+  border-right:1px solid var(--border);
+  padding:20px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+.nav-group{display:flex;flex-direction:column;gap:2px}
+.nav-label{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--text-3);
+  padding:0 10px 8px;
+}
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-1);
+  text-decoration:none;
+  border-radius:var(--radius);
+  transition:all .15s;
+  cursor:pointer;
+  position:relative;
+}
+.nav a svg{
+  width:16px;height:16px;
+  stroke:currentColor;
+  stroke-width:1.75;
+  fill:none;
+  flex-shrink:0;
+  opacity:.75;
+}
+.nav a:hover{
+  background:var(--bg-3);
+  color:var(--text-0);
+}
+.nav a.active{
+  background:var(--bg-3);
+  color:var(--text-0);
+}
+.nav a.active::before{
+  content:'';
+  position:absolute;
+  left:-12px;top:8px;bottom:8px;
+  width:2px;
+  background:var(--amber);
+  border-radius:0 2px 2px 0;
+}
+.nav a.active svg{
+  color:var(--amber);
+  opacity:1;
+}
+
+.sidebar-footer{
+  margin-top:auto;
+  padding:14px 12px;
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.sidebar-footer .label{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-2);
+  margin-bottom:4px;
+}
+.sidebar-footer .value{
+  font-family:'Instrument Serif',serif;
+  font-size:15px;
+  color:var(--text-0);
+  line-height:1.3;
+}
+.sidebar-footer .meta{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text-3);
+  margin-top:6px;
+}
+
+/* ============ MAIN ============ */
+.main{
+  grid-area:main;
+  padding:28px;
+  overflow-y:auto;
+  background:var(--bg-0);
+}
+
+/* ============ CARD ============ */
+.card{
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+}
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  gap:12px;
+  flex-wrap:wrap;
+}
+.card-title-group{display:flex;flex-direction:column;gap:2px}
+.card-title{
+  font-family:'Instrument Serif',serif;
+  font-size:20px;
+  font-weight:400;
+  letter-spacing:-.3px;
+  color:var(--text-0);
+}
+.card-subtitle{
+  font-size:12px;
+  color:var(--text-2);
+  font-weight:400;
+}
+.card-body{padding:24px}
+
+/* ============ VIEWS ============ */
+.view{display:none}
+.view.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.dash-grid{
+  display:grid;
+  grid-template-columns:minmax(380px, 1fr) minmax(440px, 1.2fr);
+  gap:20px;
+  align-items:flex-start;
+}
+@media(max-width:1080px){.dash-grid{grid-template-columns:1fr}}
+
+/* ============ FORM ============ */
+.field{margin-bottom:16px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.field-row{grid-template-columns:1fr}}
+
+.field-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-1);
+  margin-bottom:6px;
+  letter-spacing:.1px;
+}
+.field-label .req{color:var(--amber);font-weight:600}
+
+input[type=text],input[type=number],input[type=date],input[type=time],select{
+  width:100%;
+  padding:10px 12px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  font-family:'Inter',sans-serif;
+  font-size:13.5px;
+  color:var(--text-0);
+  transition:all .15s;
+  outline:none;
+}
+input:hover,select:hover{border-color:var(--border-hi)}
+input:focus,select:focus{
+  border-color:var(--amber);
+  background:var(--bg-4);
+  box-shadow:0 0 0 3px var(--amber-bg);
+}
+input::placeholder{color:var(--text-3)}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237A7266' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
+
+/* ============ UPLOAD ============ */
+.upload-zone{
+  border:1px dashed var(--border-hi);
+  background:var(--bg-3);
+  border-radius:var(--radius);
+  padding:20px;
+  transition:all .2s;
+  cursor:pointer;
+}
+.upload-zone:hover{
+  border-color:var(--amber-lo);
+  background:var(--bg-4);
+}
+.upload-zone.dragover{
+  border-color:var(--amber);
+  background:var(--amber-bg);
+}
+.upload-inner{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.upload-icon{
+  width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-4);
+  border-radius:var(--radius);
+  color:var(--amber);
+  flex-shrink:0;
+}
+.upload-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.75;fill:none}
+.upload-text{flex:1;min-width:0}
+.upload-title{
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--text-0);
+  margin-bottom:2px;
+}
+.upload-hint{
+  font-size:11.5px;
+  color:var(--text-2);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.2px;
+}
+.upload-input{display:none}
+
+.upload-preview{
+  display:none;
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+  padding:10px 12px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.upload-preview.show{display:flex}
+.upload-preview img{
+  width:44px;height:44px;
+  object-fit:cover;
+  border-radius:4px;
+  border:1px solid var(--border);
+}
+.upload-preview .meta{flex:1;min-width:0}
+.upload-preview .fname{
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--text-0);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.upload-preview .fsize{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-2);
+  margin-top:2px;
+}
+.upload-remove{
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  color:var(--text-2);
+  cursor:pointer;
+  transition:all .15s;
+  flex-shrink:0;
+}
+.upload-remove:hover{
+  color:var(--danger);
+  border-color:var(--danger);
+  background:var(--danger-bg);
+}
+.upload-remove svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.5;fill:none}
+
+/* ============ CALC ============ */
+.calc{
+  margin-top:20px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.calc-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-2);
+}
+.calc-head .split{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text-3);
+  font-size:10px;
+  letter-spacing:0;
+  font-weight:500;
+}
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+.calc-cell{
+  padding:14px 12px;
+  text-align:center;
+  border-right:1px solid var(--border);
+}
+.calc-cell:last-child{border-right:none}
+.calc-cell .pct{
+  font-family:'Instrument Serif',serif;
+  font-size:16px;
+  color:var(--text-2);
+  line-height:1;
+}
+.calc-cell .name{
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  color:var(--text-3);
+  margin-top:4px;
+}
+.calc-cell .val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-0);
+  margin-top:8px;
+}
+.calc-cell.highlight{background:var(--amber-bg)}
+.calc-cell.highlight .pct{color:var(--amber)}
+.calc-cell.highlight .name{color:var(--amber-lo)}
+.calc-cell.highlight .val{color:var(--amber-hi)}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 18px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.1px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  transition:all .15s;
+  border:1px solid transparent;
+  text-decoration:none;
+}
+.btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
+.btn-primary{
+  background:var(--amber);
+  color:var(--bg-0);
+  font-weight:600;
+}
+.btn-primary:hover:not(:disabled){
+  background:var(--amber-hi);
+  box-shadow:0 4px 12px rgba(200,150,74,.25);
+}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{
+  background:transparent;
+  color:var(--text-1);
+  border-color:var(--border);
+}
+.btn-ghost:hover{
+  color:var(--text-0);
+  border-color:var(--border-hi);
+  background:var(--bg-3);
+}
+
+.form-actions{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  margin-top:24px;
+}
+
+.status-msg{
+  margin-top:14px;
+  padding:10px 14px;
+  border-radius:var(--radius);
+  font-size:12.5px;
+  font-weight:500;
+  display:none;
+  text-align:center;
+}
+.status-msg.ok{background:var(--success-bg);color:var(--success);display:block;border:1px solid rgba(122,154,106,.3)}
+.status-msg.err{background:var(--danger-bg);color:var(--danger);display:block;border:1px solid rgba(184,87,74,.3)}
+.status-msg.loading{background:var(--amber-bg);color:var(--amber);display:block;border:1px solid rgba(200,150,74,.3)}
+
+/* ============ STATS ============ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-bottom:24px;
+}
+@media(max-width:520px){.stats-grid{grid-template-columns:1fr}}
+.stat{
+  padding:16px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  position:relative;
+  overflow:hidden;
+}
+.stat-label{
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  color:var(--text-2);
+  margin-bottom:8px;
+}
+.stat-value{
+  font-family:'Instrument Serif',serif;
+  font-size:24px;
+  font-weight:400;
+  letter-spacing:-.5px;
+  color:var(--text-0);
+  line-height:1.1;
+}
+.stat-value.accent{color:var(--amber)}
+.stat-trend{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text-3);
+  margin-top:6px;
+}
+
+/* ============ SECTIONS ============ */
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:24px 0 14px;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.section-title{
+  font-family:'Instrument Serif',serif;
+  font-size:16px;
+  font-weight:400;
+  letter-spacing:-.2px;
+  color:var(--text-0);
+}
+
+/* ============ TABS ============ */
+.tabs{
+  display:inline-flex;
+  padding:3px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  gap:2px;
+}
+.tab{
+  padding:6px 14px;
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-2);
+  background:transparent;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.tab:hover{color:var(--text-0)}
+.tab.active{
+  background:var(--bg-2);
+  color:var(--text-0);
+  box-shadow:var(--shadow-sm);
+}
+
+/* ============ TABLE ============ */
+.table-wrap{overflow-x:auto;margin:0 -24px}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-2);
+  text-align:left;
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-2);
+  white-space:nowrap;
+}
+th.right{text-align:right}
+th.center{text-align:center}
+td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  color:var(--text-0);
+  vertical-align:middle;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+td.right{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+td.center{text-align:center}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-1)}
+
+.rank-pos{
+  font-family:'Instrument Serif',serif;
+  font-size:15px;
+  color:var(--text-2);
+  width:32px;
+}
+.rank-pos.gold{color:var(--amber);font-size:17px}
+.rank-pos.silver{color:#B8B0A0}
+.rank-pos.bronze{color:#A67C52}
+.rank-name{font-weight:500;color:var(--text-0)}
+.rank-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--text-3);
+}
+.rank-value{
+  text-align:right;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;
+  color:var(--text-0);
+  font-weight:500;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 8px;
+  font-size:11px;
+  font-weight:500;
+  border-radius:4px;
+  letter-spacing:.2px;
+}
+.badge::before{
+  content:'';
+  width:5px;height:5px;
+  border-radius:50%;
+  background:currentColor;
+}
+.badge.selesai{background:var(--success-bg);color:var(--success)}
+.badge.pending{background:var(--warn-bg);color:var(--warn)}
+
+/* ============ TOOLBAR ============ */
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px 16px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:18px;
+}
+.toolbar label{
+  font-size:11.5px;
+  font-weight:500;
+  color:var(--text-2);
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.toolbar select{
+  width:auto;
+  min-width:180px;
+  padding:6px 30px 6px 10px;
+  font-size:12.5px;
+}
+.toolbar .spacer{flex:1}
+.filter-info{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--text-2);
+}
+
+/* ============ EMPTY ============ */
+.empty{
+  padding:48px 20px;
+  text-align:center;
+  color:var(--text-2);
+  font-size:13px;
+}
+.empty-icon{
+  width:40px;height:40px;
+  margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);
+}
+.empty-icon svg{width:28px;height:28px;stroke:currentColor;stroke-width:1.5;fill:none}
+
+/* ============ SETTINGS ============ */
+.settings-section{margin-bottom:24px}
+.settings-label{
+  font-size:11.5px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-2);
+  margin-bottom:10px;
+  display:block;
+}
+
+.lang-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+@media(max-width:520px){.lang-grid{grid-template-columns:1fr}}
+.lang-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  cursor:pointer;
+  transition:all .15s;
+  color:var(--text-1);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  text-align:left;
+}
+.lang-btn:hover{
+  border-color:var(--border-hi);
+  color:var(--text-0);
+  background:var(--bg-4);
+}
+.lang-btn.active{
+  border-color:var(--amber);
+  background:var(--amber-bg);
+  color:var(--amber-hi);
+}
+.lang-flag{
+  font-size:16px;
+  line-height:1;
+}
+
+.notif-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 16px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.notif-info{flex:1;min-width:0}
+.notif-title{
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--text-0);
+  margin-bottom:2px;
+}
+.notif-sub{
+  font-size:11.5px;
+  color:var(--text-2);
+}
+.switch{
+  position:relative;
+  width:38px;height:22px;
+  background:var(--bg-4);
+  border:1px solid var(--border-hi);
+  border-radius:11px;
+  cursor:pointer;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.switch::after{
+  content:'';
+  position:absolute;
+  top:2px;left:2px;
+  width:16px;height:16px;
+  background:var(--text-2);
+  border-radius:50%;
+  transition:all .2s;
+}
+.switch.on{
+  background:var(--amber);
+  border-color:var(--amber);
+}
+.switch.on::after{
+  transform:translateX(16px);
+  background:var(--bg-0);
+}
+.switch.disabled{opacity:.4;cursor:not-allowed}
+.notif-status{
+  font-size:11px;
+  color:var(--text-2);
+  margin-top:8px;
+  font-family:'JetBrains Mono',monospace;
+}
+.notif-status.warn{color:var(--warn)}
+.notif-status.ok{color:var(--success)}
+
+.info-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  font-size:13px;
+}
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+}
+.info-row:last-child{border-bottom:none}
+.info-row .k{color:var(--text-2);font-weight:500}
+.info-row .v{color:var(--text-0);font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* ============ MODAL ============ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(15,14,12,.8);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+  padding:20px;
+  animation:fadeIn .15s;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--bg-2);
+  border:1px solid var(--border-hi);
+  border-radius:12px;
+  max-width:420px;
+  width:100%;
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{
+  padding:24px 24px 16px;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.modal-icon{
+  width:52px;height:52px;
+  margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--success-bg);
+  border-radius:50%;
+  color:var(--success);
+}
+.modal-icon svg{width:26px;height:26px;stroke:currentColor;stroke-width:2;fill:none}
+.modal-title{
+  font-family:'Instrument Serif',serif;
+  font-size:22px;
+  font-weight:400;
+  letter-spacing:-.3px;
+  color:var(--text-0);
+  margin-bottom:4px;
+}
+.modal-sub{
+  font-size:12.5px;
+  color:var(--text-2);
+}
+.modal-body{padding:20px 24px}
+.modal-recap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  font-size:13px;
+}
+.recap-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.recap-row .k{color:var(--text-2);font-size:12.5px}
+.recap-row .v{color:var(--text-0);font-weight:500}
+.recap-row.total{
+  padding-top:12px;
+  border-top:1px solid var(--border);
+  margin-top:4px;
+}
+.recap-row.total .k{color:var(--text-1);font-weight:500;font-size:13px}
+.recap-row.total .v{
+  font-family:'Instrument Serif',serif;
+  font-size:20px;
+  color:var(--amber);
+  font-weight:400;
+}
+.modal-foot{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:16px 24px 24px;
+  background:var(--bg-1);
+  border-top:1px solid var(--border);
+}
+@media(max-width:420px){.modal-foot{grid-template-columns:1fr}}
+
+/* ============ CONFETTI ============ */
+#confettiCanvas{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:10001;
+  display:none;
+}
+#confettiCanvas.active{display:block}
+
+/* ============ TOAST ============ */
+.toast{
+  position:fixed;
+  bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--bg-2);
+  color:var(--text-0);
+  padding:12px 20px;
+  border:1px solid var(--border-hi);
+  border-radius:var(--radius);
+  font-size:13px;
+  font-weight:500;
+  box-shadow:var(--shadow-lg);
+  z-index:9999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity:0;
+  pointer-events:none;
+  max-width:90vw;
+  text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ============ MOBILE ============ */
+@media(max-width:760px){
+  .app{
+    grid-template-columns:1fr;
+    grid-template-areas:"header" "sidebar" "main";
+  }
+  .topbar{padding:0 16px}
+  .sidebar{
+    border-right:none;
+    border-bottom:1px solid var(--border);
+    padding:12px;
+    flex-direction:row;
+    overflow-x:auto;
+    gap:8px;
+  }
+  .nav-group{flex-direction:row;gap:4px}
+  .nav{display:flex;gap:4px}
+  .nav-label,.sidebar-footer{display:none}
+  .nav a{white-space:nowrap;padding:8px 12px}
+  .nav a.active::before{display:none}
+  .nav a.active{background:var(--amber-bg);color:var(--amber)}
+  .main{padding:16px}
+  .card-body{padding:18px}
+  .card-head{padding:16px 18px}
+  .table-wrap{margin:0 -18px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">L</div>
+      <div>
+        <div class="brand-name">LHS Business Monitoring</div>
+        <div class="brand-sub" data-i18n="brand_tagline">Real-Time Counting & Monitoring System</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <nav class="nav">
+        <a class="active" data-view="dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+          <span data-i18n="nav_dashboard">Dashboard</span>
+        </a>
+        <a data-view="transactions">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <span data-i18n="nav_transactions">Transactions</span>
+        </a>
+        <a data-view="rank-list">
+          <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          <span data-i18n="nav_rank">Rank List</span>
+        </a>
+        <a data-view="monthly-recap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span data-i18n="nav_monthly">Monthly Recap</span>
+        </a>
+        <a data-view="export">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          <span data-i18n="nav_export">Export</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <nav class="nav">
+        <a data-view="settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="nav_settings">Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="label">Ledger Status</div>
+      <div class="value">Active</div>
+      <div class="meta">v3.2.2 · <span id="sidebarTime">—</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ======== DASHBOARD ======== -->
+    <section class="view active" id="view-dashboard">
+      <div class="dash-grid">
+
+        <!-- FORM -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-title" data-i18n="form_title">New Transaction</div>
+              <div class="card-subtitle" data-i18n="form_sub">Input transaction data</div>
+            </div>
+            <div class="filter-info" id="liveDate">— — • —:—</div>
+          </div>
+
+          <div class="card-body">
+            <form id="trxForm">
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_customer">Customer</span> <span class="req">*</span></label>
+                  <input type="text" id="nama" required data-i18n-ph="ph_customer" placeholder="John Doe">
+                </div>
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_agent">Agent</span> <span class="req">*</span></label>
+                  <input type="text" id="agent" required data-i18n-ph="ph_agent" placeholder="Agent Smith">
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_official">Official</span> <span class="req">*</span></label>
+                  <input type="text" id="official" required data-i18n-ph="ph_official" placeholder="Officer Jane">
+                </div>
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_amount">Amount (USD)</span> <span class="req">*</span></label>
+                  <input type="number" id="jumlah" required min="0" step="0.01" data-i18n-ph="ph_amount" placeholder="0.00">
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_date">Date</span> <span class="req">*</span></label>
+                  <input type="date" id="tanggal" required>
+                </div>
+                <div class="field">
+                  <label class="field-label"><span data-i18n="lbl_time">Time</span> <span class="req">*</span></label>
+                  <input type="time" id="jam" required>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label"><span data-i18n="lbl_status">Status</span> <span class="req">*</span></label>
+                <select id="status" required>
+                  <option value="" data-i18n="opt_select">-- Select Status --</option>
+                  <option value="Selesai" data-i18n="opt_done">Done</option>
+                  <option value="Pending" data-i18n="opt_pending">Pending</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="field-label"><span data-i18n="lbl_upload">Upload Photo</span></label>
+                <div class="upload-zone" id="dropZone">
+                  <div class="upload-inner">
+                    <div class="upload-icon">
+                      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+                    </div>
+                    <div class="upload-text">
+                      <div class="upload-title" data-i18n="up_click">Click to upload, drag & drop, or paste</div>
+                      <div class="upload-hint" data-i18n="up_valid">JPG · PNG · max 5 MB</div>
+                    </div>
+                    <input type="file" id="photo" class="upload-input" accept="image/jpeg,image/jpg,image/png,.jpg,.jpeg,.png">
+                  </div>
+                </div>
+
+                <div class="upload-preview" id="uploadInfo">
+                  <img id="thumb" alt="">
+                  <div class="meta">
+                    <div class="fname" id="fName">—</div>
+                    <div class="fsize" id="fSize">—</div>
+                  </div>
+                  <button type="button" class="upload-remove" onclick="clearPhoto_(event)">
+                    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="calc">
+                <div class="calc-head">
+                  <span data-i18n="calc_title">Commission Split</span>
+                  <span class="split" data-i18n="calc_sub">80 / 5 / 5 / 10</span>
+                </div>
+                <div class="calc-grid">
+                  <div class="calc-cell">
+                    <div class="pct">80%</div>
+                    <div class="name" data-i18n="calc_customer">Customer</div>
+                    <div class="val" id="cCustomer">$0.00</div>
+                  </div>
+                  <div class="calc-cell">
+                    <div class="pct">5%</div>
+                    <div class="name" data-i18n="calc_agent">Agent</div>
+                    <div class="val" id="cAgent">$0.00</div>
+                  </div>
+                  <div class="calc-cell">
+                    <div class="pct">5%</div>
+                    <div class="name" data-i18n="calc_official">Official</div>
+                    <div class="val" id="cOfficial">$0.00</div>
+                  </div>
+                  <div class="calc-cell highlight">
+                    <div class="pct">10%</div>
+                    <div class="name" data-i18n="calc_company">Company</div>
+                    <div class="val" id="cCompany">$0.00</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                  <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                  <span data-i18n="btn_save">Save Transaction</span>
+                </button>
+                <button type="button" class="btn btn-ghost" id="resetBtn">
+                  <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+                  <span data-i18n="btn_reset">Reset</span>
+                </button>
+              </div>
+
+              <div class="status-msg" id="statusMsg"></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- DASHBOARD PANEL -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-title" data-i18n="dash_title">Dashboard</div>
+              <div class="card-subtitle" data-i18n="dash_sub">Summary of activity</div>
+            </div>
+            <select id="monthFilter" style="width:auto;min-width:150px;padding:6px 30px 6px 10px;font-size:12.5px;">
+              <option value="" data-i18n="tb_all_months">— All Months —</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div id="dashContent">
+              <div class="empty">
+                <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                Loading ledger...
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section class="view" id="view-transactions">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-title" data-i18n="trx_title">All Transactions</div>
+            <div class="card-subtitle" data-i18n="trx_sub">Complete history</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toolbar">
+            <label data-i18n="tb_filter">Filter Month</label>
+            <select id="monthFilterTrx"></select>
+            <span class="spacer"></span>
+            <span class="filter-info" id="filterInfoTrx">—</span>
+          </div>
+          <div id="trxContent">
+            <div class="empty">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RANK -->
+    <section class="view" id="view-rank-list">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-title" data-i18n="rank_title_page">Rank List</div>
+            <div class="card-subtitle" data-i18n="rank_sub">Top performer ranking</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toolbar">
+            <label data-i18n="tb_filter">Filter Month</label>
+            <select id="monthFilterRank"></select>
+            <span class="spacer"></span>
+            <span class="filter-info" id="filterInfoRank">—</span>
+          </div>
+          <div id="rankContent">
+            <div class="empty">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MONTHLY -->
+    <section class="view" id="view-monthly-recap">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-title" data-i18n="monthly_title">Monthly Recap</div>
+            <div class="card-subtitle" data-i18n="monthly_sub">Monthly totals</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="monthlyContent">
+            <div class="empty">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section class="view" id="view-export">
+      <div style="max-width:520px;margin:0 auto">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-title" data-i18n="export_title">Export CSV</div>
+              <div class="card-subtitle" data-i18n="export_sub">Download data</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <label class="field-label" data-i18n="export_pick">Choose Month to Export</label>
+              <select id="monthFilterExport"></select>
+            </div>
+            <button class="btn btn-primary" id="exportCsvBtn" style="width:100%;margin-top:8px">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              <span data-i18n="export_btn">Download CSV</span>
+            </button>
+            <div class="filter-info" id="filterInfoExport" style="margin-top:12px;text-align:center"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div style="max-width:560px;margin:0 auto">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-title" data-i18n="set_title">Settings</div>
+              <div class="card-subtitle" data-i18n="set_sub">Application configuration</div>
+            </div>
+          </div>
+          <div class="card-body">
+
+            <div class="settings-section">
+              <label class="settings-label" data-i18n="set_notif">Notifications</label>
+              <div class="notif-row">
+                <div class="notif-info">
+                  <div class="notif-title" data-i18n="notif_title">Desktop Notifications</div>
+                  <div class="notif-sub" data-i18n="notif_sub">Show OS notification on success</div>
+                </div>
+                <div class="switch" id="notifSwitch" role="switch" aria-checked="false" tabindex="0"></div>
+              </div>
+              <div class="notif-status" id="notifStatus"></div>
+            </div>
+
+            <div class="settings-section">
+              <label class="settings-label" data-i18n="set_lang">Language</label>
+              <div class="lang-grid">
+                <button class="lang-btn" data-lang="en">
+                  <span class="lang-flag">🇬🇧</span>
+                  <span>English</span>
+                </button>
+                <button class="lang-btn" data-lang="id">
+                  <span class="lang-flag">🇮🇩</span>
+                  <span>Indonesia</span>
+                </button>
+                <button class="lang-btn" data-lang="ms">
+                  <span class="lang-flag">🇲🇾</span>
+                  <span>Malaysia</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <label class="settings-label">System</label>
+              <div class="info-list">
+                <div class="info-row"><span class="k">Version</span><span class="v">3.2.2</span></div>
+                <div class="info-row"><span class="k" data-i18n="set_backend">Backend</span><span class="v">Apps Script</span></div>
+                <div class="info-row"><span class="k" data-i18n="set_storage">Storage</span><span class="v">Discord CDN</span></div>
+                <div class="info-row"><span class="k" data-i18n="set_commission">Split</span><span class="v">80/5/5/10</span></div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <p style="font-size:11.5px;color:var(--text-3);line-height:1.6" data-i18n="set_hint">
+                To change configuration, edit Code.gs in Google Apps Script, then redeploy.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="modal-title" data-i18n="modal_title">Transaction Saved</div>
+      <div class="modal-sub" data-i18n="modal_sub">Data has been logged successfully</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-recap" id="modalRecap"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="modalAddAnother" data-i18n="modal_add">Add Another</button>
+      <button class="btn btn-primary" id="modalGoDashboard" data-i18n="modal_dash">To Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+/* ============================================================
+ *  CONFIG
+ * ============================================================ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzUK6dlWzxCx1xqvgYXB5XHzROgMNMt95hQbO2lkc8rixL2CmtLtfAK2z9B_lYeTQhB/exec';
+
+const $ = id => document.getElementById(id);
+const usd = n => '$' + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ============================================================
+ *  i18n
+ * ============================================================ */
+const I18N = {
+  en: {
+    brand_tagline:'Real-Time Counting & Monitoring System',
+    nav_dashboard:'Dashboard', nav_transactions:'Transactions',
+    nav_rank:'Rank List', nav_monthly:'Monthly Recap',
+    nav_export:'Export', nav_settings:'Settings',
+    form_title:'New Transaction', form_sub:'Input transaction data',
+    lbl_customer:'Customer', lbl_agent:'Agent', lbl_official:'Official',
+    lbl_amount:'Amount (USD)', lbl_date:'Date', lbl_time:'Time',
+    lbl_status:'Status', lbl_upload:'Upload Photo',
+    ph_customer:'John Doe', ph_agent:'Agent Smith',
+    ph_official:'Officer Jane', ph_amount:'0.00',
+    opt_select:'-- Select Status --', opt_done:'Done', opt_pending:'Pending',
+    up_click:'Click to upload, drag & drop, or paste',
+    up_valid:'JPG · PNG · max 5 MB',
+    calc_title:'Commission Split', calc_sub:'80 / 5 / 5 / 10',
+    calc_customer:'Customer', calc_agent:'Agent', calc_official:'Official', calc_company:'Company',
+    btn_save:'Save Transaction', btn_reset:'Reset',
+    dash_title:'Dashboard', dash_sub:'Summary of activity',
+    stat_total_log:'Total Log', stat_total_trx:'Total Transactions',
+    stat_total_comm:'Total Commission', stat_total_cust:'Total Customer',
+    stat_trend:'Based on active filter',
+    rank_section:'Top 10', recent_section:'Recent Transactions',
+    rank_tab_customer:'Customer', rank_tab_agent:'Agent', rank_tab_official:'Official',
+    rank_name:'Name', rank_log:'Log', rank_total:'Total',
+    tbl_date:'Date', tbl_time:'Time', tbl_customer:'Customer',
+    tbl_agent:'Agent', tbl_official:'Official',
+    tbl_amount:'Amount', tbl_comm:'Commission', tbl_status:'Status',
+    modal_title:'Transaction Saved', modal_sub:'Data has been logged successfully',
+    modal_add:'Add Another', modal_dash:'To Dashboard',
+    modal_total:'Total Amount', modal_time:'Time', modal_status:'Status',
+    tb_filter:'Filter Month', tb_all_months:'— All Months —',
+    trx_title:'All Transactions', trx_sub:'Complete history',
+    rank_title_page:'Rank List', rank_sub:'Top performer ranking',
+    monthly_title:'Monthly Recap', monthly_sub:'Monthly totals',
+    monthly_month:'Month', monthly_entries:'Entries', monthly_total:'Total',
+    export_title:'Export CSV', export_sub:'Download data',
+    export_pick:'Choose Month to Export', export_btn:'Download CSV',
+    export_ready:'entries ready',
+    set_title:'Settings', set_sub:'Application configuration',
+    set_lang:'Language', set_notif:'Notifications',
+    set_backend:'Backend', set_storage:'Storage', set_commission:'Split',
+    set_hint:'To change configuration, edit Code.gs in Google Apps Script, then redeploy.',
+    notif_title:'Desktop Notifications', notif_sub:'Show OS notification on success',
+    notif_status_on:'Enabled', notif_status_off:'Disabled',
+    notif_unsupported:'Browser does not support notifications',
+    notif_unsupported_hint:'⚠ Not supported',
+    notif_blocked_hint:'⚠ Blocked in browser settings',
+    notif_denied:'Permission denied', notif_failed:'Failed to enable',
+    notif_on:'Notifications enabled', notif_off:'Notifications disabled',
+    notif_test_title:'LHS Business Monitoring', notif_test_body:'Notifications are active',
+    notif_trx_title:'Transaction Saved',
+    toast_saved:'Transaction saved', toast_reset:'Form reset',
+    toast_ready:'Ready for new transaction',
+    toast_fmt_err:'Format must be JPG or PNG', toast_size_err:'Size exceeds 5MB',
+    toast_img_ready:'Image ready', toast_csv_ok:'CSV downloaded',
+    toast_paste_hint:'Press Ctrl+V now',
+    toast_lang_changed:'Language changed',
+    msg_saving:'Saving...', msg_saved:'Saved to ledger',
+    msg_loading:'Loading...', msg_empty:'No records yet',
+    msg_no_data:'No transactions this month', msg_no_month:'No data',
+    msg_error:'Error', msg_failed:'Failed to load',
+    msg_no_export:'No data to export',
+    filter_info:'Showing {n} entries', filter_info_all:'Total: {n} entries'
+  },
+  id: {
+    brand_tagline:'Sistem Penghitungan & Pemantauan Real-Time',
+    nav_dashboard:'Dasbor', nav_transactions:'Transaksi',
+    nav_rank:'Peringkat', nav_monthly:'Rekap Bulanan',
+    nav_export:'Ekspor', nav_settings:'Pengaturan',
+    form_title:'Transaksi Baru', form_sub:'Masukkan data transaksi',
+    lbl_customer:'Pelanggan', lbl_agent:'Agen', lbl_official:'Pejabat',
+    lbl_amount:'Jumlah (USD)', lbl_date:'Tanggal', lbl_time:'Jam',
+    lbl_status:'Status', lbl_upload:'Unggah Foto',
+    ph_customer:'Budi Santoso', ph_agent:'Agen Wijaya',
+    ph_official:'Pejabat Sari', ph_amount:'0.00',
+    opt_select:'-- Pilih Status --', opt_done:'Selesai', opt_pending:'Tertunda',
+    up_click:'Klik, tarik & lepas, atau tempel foto',
+    up_valid:'JPG · PNG · maks 5 MB',
+    calc_title:'Pembagian Komisi', calc_sub:'80 / 5 / 5 / 10',
+    calc_customer:'Pelanggan', calc_agent:'Agen', calc_official:'Pejabat', calc_company:'Perusahaan',
+    btn_save:'Simpan Transaksi', btn_reset:'Reset',
+    dash_title:'Dasbor', dash_sub:'Ringkasan aktivitas',
+    stat_total_log:'Total Log', stat_total_trx:'Total Transaksi',
+    stat_total_comm:'Total Komisi', stat_total_cust:'Total Pelanggan',
+    stat_trend:'Berdasarkan filter aktif',
+    rank_section:'10 Teratas', recent_section:'Transaksi Terbaru',
+    rank_tab_customer:'Pelanggan', rank_tab_agent:'Agen', rank_tab_official:'Pejabat',
+    rank_name:'Nama', rank_log:'Log', rank_total:'Total',
+    tbl_date:'Tanggal', tbl_time:'Jam', tbl_customer:'Pelanggan',
+    tbl_agent:'Agen', tbl_official:'Pejabat',
+    tbl_amount:'Jumlah', tbl_comm:'Komisi', tbl_status:'Status',
+    modal_title:'Transaksi Tersimpan', modal_sub:'Data berhasil dicatat',
+    modal_add:'Tambah Lagi', modal_dash:'Ke Dasbor',
+    modal_total:'Total Uang', modal_time:'Waktu', modal_status:'Status',
+    tb_filter:'Filter Bulan', tb_all_months:'— Semua Bulan —',
+    trx_title:'Semua Transaksi', trx_sub:'Riwayat lengkap',
+    rank_title_page:'Daftar Peringkat', rank_sub:'Peringkat top performer',
+    monthly_title:'Rekap Bulanan', monthly_sub:'Total per bulan',
+    monthly_month:'Bulan', monthly_entries:'Entri', monthly_total:'Total',
+    export_title:'Ekspor CSV', export_sub:'Unduh data',
+    export_pick:'Pilih Bulan untuk Diekspor', export_btn:'Unduh CSV',
+    export_ready:'entri siap',
+    set_title:'Pengaturan', set_sub:'Konfigurasi aplikasi',
+    set_lang:'Bahasa', set_notif:'Notifikasi',
+    set_backend:'Backend', set_storage:'Penyimpanan', set_commission:'Pembagian',
+    set_hint:'Untuk mengubah konfigurasi, edit Code.gs di Google Apps Script, lalu deploy ulang.',
+    notif_title:'Notifikasi Desktop', notif_sub:'Tampilkan notifikasi OS saat sukses',
+    notif_status_on:'Aktif', notif_status_off:'Nonaktif',
+    notif_unsupported:'Browser tidak mendukung notifikasi',
+    notif_unsupported_hint:'⚠ Tidak didukung',
+    notif_blocked_hint:'⚠ Diblokir di pengaturan browser',
+    notif_denied:'Izin ditolak', notif_failed:'Gagal mengaktifkan',
+    notif_on:'Notifikasi diaktifkan', notif_off:'Notifikasi dinonaktifkan',
+    notif_test_title:'LHS Business Monitoring', notif_test_body:'Notifikasi aktif',
+    notif_trx_title:'Transaksi Tersimpan',
+    toast_saved:'Transaksi tersimpan', toast_reset:'Form direset',
+    toast_ready:'Siap input transaksi baru',
+    toast_fmt_err:'Format harus JPG atau PNG', toast_size_err:'Ukuran melebihi 5MB',
+    toast_img_ready:'Gambar siap', toast_csv_ok:'CSV diunduh',
+    toast_paste_hint:'Tekan Ctrl+V sekarang',
+    toast_lang_changed:'Bahasa diubah',
+    msg_saving:'Menyimpan...', msg_saved:'Tercatat di ledger',
+    msg_loading:'Memuat...', msg_empty:'Belum ada catatan',
+    msg_no_data:'Tidak ada transaksi bulan ini', msg_no_month:'Tidak ada data',
+    msg_error:'Error', msg_failed:'Gagal memuat',
+    msg_no_export:'Tidak ada data untuk diekspor',
+    filter_info:'Menampilkan {n} entri', filter_info_all:'Total: {n} entri'
+  },
+  ms: {
+    brand_tagline:'Sistem Pengiraan & Pemantauan Masa Nyata',
+    nav_dashboard:'Papan Pemuka', nav_transactions:'Transaksi',
+    nav_rank:'Senarai Ranking', nav_monthly:'Rumusan Bulanan',
+    nav_export:'Eksport', nav_settings:'Tetapan',
+    form_title:'Transaksi Baru', form_sub:'Masukkan data transaksi',
+    lbl_customer:'Pelanggan', lbl_agent:'Ejen', lbl_official:'Pegawai',
+    lbl_amount:'Jumlah (USD)', lbl_date:'Tarikh', lbl_time:'Masa',
+    lbl_status:'Status', lbl_upload:'Muat Naik Foto',
+    ph_customer:'Ahmad bin Ali', ph_agent:'Ejen Rahman',
+    ph_official:'Pegawai Lim', ph_amount:'0.00',
+    opt_select:'-- Pilih Status --', opt_done:'Selesai', opt_pending:'Tertunda',
+    up_click:'Klik, seret & lepas, atau tampal foto',
+    up_valid:'JPG · PNG · maks 5 MB',
+    calc_title:'Pembahagian Komisen', calc_sub:'80 / 5 / 5 / 10',
+    calc_customer:'Pelanggan', calc_agent:'Ejen', calc_official:'Pegawai', calc_company:'Syarikat',
+    btn_save:'Simpan Transaksi', btn_reset:'Set Semula',
+    dash_title:'Papan Pemuka', dash_sub:'Ringkasan aktiviti',
+    stat_total_log:'Jumlah Log', stat_total_trx:'Jumlah Transaksi',
+    stat_total_comm:'Jumlah Komisen', stat_total_cust:'Jumlah Pelanggan',
+    stat_trend:'Berdasarkan penapis aktif',
+    rank_section:'10 Teratas', recent_section:'Transaksi Terkini',
+    rank_tab_customer:'Pelanggan', rank_tab_agent:'Ejen', rank_tab_official:'Pegawai',
+    rank_name:'Nama', rank_log:'Log', rank_total:'Jumlah',
+    tbl_date:'Tarikh', tbl_time:'Masa', tbl_customer:'Pelanggan',
+    tbl_agent:'Ejen', tbl_official:'Pegawai',
+    tbl_amount:'Jumlah', tbl_comm:'Komisen', tbl_status:'Status',
+    modal_title:'Transaksi Disimpan', modal_sub:'Data berjaya dicatat',
+    modal_add:'Tambah Lagi', modal_dash:'Ke Papan Pemuka',
+    modal_total:'Jumlah Wang', modal_time:'Masa', modal_status:'Status',
+    tb_filter:'Tapis Bulan', tb_all_months:'— Semua Bulan —',
+    trx_title:'Semua Transaksi', trx_sub:'Sejarah lengkap',
+    rank_title_page:'Senarai Ranking', rank_sub:'Ranking top performer',
+    monthly_title:'Rumusan Bulanan', monthly_sub:'Jumlah setiap bulan',
+    monthly_month:'Bulan', monthly_entries:'Entri', monthly_total:'Jumlah',
+    export_title:'Eksport CSV', export_sub:'Muat turun data',
+    export_pick:'Pilih Bulan untuk Dieksport', export_btn:'Muat Turun CSV',
+    export_ready:'entri sedia',
+    set_title:'Tetapan', set_sub:'Konfigurasi aplikasi',
+    set_lang:'Bahasa', set_notif:'Pemberitahuan',
+    set_backend:'Backend', set_storage:'Storan', set_commission:'Pembahagian',
+    set_hint:'Untuk mengubah konfigurasi, edit Code.gs di Google Apps Script, kemudian deploy semula.',
+    notif_title:'Pemberitahuan Desktop', notif_sub:'Tunjukkan pemberitahuan OS apabila berjaya',
+    notif_status_on:'Aktif', notif_status_off:'Tidak aktif',
+    notif_unsupported:'Pelayar tidak menyokong pemberitahuan',
+    notif_unsupported_hint:'⚠ Tidak disokong',
+    notif_blocked_hint:'⚠ Disekat dalam tetapan pelayar',
+    notif_denied:'Kebenaran ditolak', notif_failed:'Gagal mengaktifkan',
+    notif_on:'Pemberitahuan diaktifkan', notif_off:'Pemberitahuan dinyahaktifkan',
+    notif_test_title:'LHS Business Monitoring', notif_test_body:'Pemberitahuan aktif',
+    notif_trx_title:'Transaksi Disimpan',
+    toast_saved:'Transaksi disimpan', toast_reset:'Borang direset',
+    toast_ready:'Sedia input transaksi baru',
+    toast_fmt_err:'Format mesti JPG atau PNG', toast_size_err:'Saiz melebihi 5MB',
+    toast_img_ready:'Gambar sedia', toast_csv_ok:'CSV dimuat turun',
+    toast_paste_hint:'Tekan Ctrl+V sekarang',
+    toast_lang_changed:'Bahasa ditukar',
+    msg_saving:'Menyimpan...', msg_saved:'Dicatat dalam ledger',
+    msg_loading:'Memuatkan...', msg_empty:'Belum ada catatan',
+    msg_no_data:'Tiada transaksi bulan ini', msg_no_month:'Tiada data',
+    msg_error:'Ralat', msg_failed:'Gagal memuatkan',
+    msg_no_export:'Tiada data untuk dieksport',
+    filter_info:'Menunjukkan {n} entri', filter_info_all:'Jumlah: {n} entri'
+  }
+};
+
+const LANG_KEY = 'lhs_business_lang';
+let CURRENT_LANG = 'en';
+(function initLang(){
+  const s = localStorage.getItem(LANG_KEY);
+  if(s && I18N[s]){ CURRENT_LANG = s; return; }
+  const nav = (navigator.language||'en').toLowerCase();
+  if(nav.startsWith('id')) CURRENT_LANG = 'id';
+  else if(nav.startsWith('ms')||nav.startsWith('my')) CURRENT_LANG = 'ms';
+  else CURRENT_LANG = 'en';
+})();
+
+function t(key, vars){
+  const dict = I18N[CURRENT_LANG] || I18N.en;
+  let str = dict[key] || I18N.en[key] || key;
+  if(vars) Object.keys(vars).forEach(k=>{ str = str.replace(new RegExp('\\{'+k+'\\}','g'), vars[k]); });
+  return str;
+}
+
+function applyLanguage(lang){
+  if(!I18N[lang]) lang = 'en';
+  CURRENT_LANG = lang;
+  localStorage.setItem(LANG_KEY, lang);
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v = t(el.getAttribute('data-i18n'));
+    if(v) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const v = t(el.getAttribute('data-i18n-html'));
+    if(v) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const v = t(el.getAttribute('data-i18n-ph'));
+    if(v) el.placeholder = v;
+  });
+
+  const addBtn = $('modalAddAnother'), dashBtn = $('modalGoDashboard');
+  if(addBtn) addBtn.textContent = t('modal_add');
+  if(dashBtn) dashBtn.textContent = t('modal_dash');
+
+  ['monthFilter','monthFilterTrx','monthFilterRank','monthFilterExport'].forEach(id=>{
+    const sel = $(id);
+    if(!sel) return;
+    const first = sel.querySelector('option[value=""]');
+    if(first) first.textContent = t('tb_all_months');
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  updateNotifUI();
+  if(ALL_RECORDS.length){
+    renderDashboard();
+    renderTransactionsView();
+    renderRankView();
+    renderMonthlyView();
+    renderExportView();
+  }
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    applyLanguage(btn.dataset.lang);
+    showToast(t('toast_lang_changed'));
+  });
+});
+
+/* ============================================================
+ *  VIEW SWITCH
+ * ============================================================ */
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+  const view = $('view-'+name);
+  const nav  = document.querySelector('.nav a[data-view="'+name+'"]');
+  if(view) view.classList.add('active');
+  if(nav)  nav.classList.add('active');
+
+  if(name==='transactions')  renderTransactionsView();
+  if(name==='rank-list')     renderRankView();
+  if(name==='monthly-recap') renderMonthlyView();
+  if(name==='export')        renderExportView();
+}
+document.querySelectorAll('.nav a[data-view]').forEach(a=>{
+  a.addEventListener('click', ()=>switchView(a.dataset.view));
+});
+
+/* ============================================================
+ *  INIT DATE
+ * ============================================================ */
+(function initDateTime(){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  $('tanggal').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  $('jam').value = pad(now.getHours())+':'+pad(now.getMinutes());
+})();
+
+function updateLiveDate(){
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mo = d.toLocaleString('en-US',{month:'short'});
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  $('liveDate').textContent = `${dd} ${mo} ${yyyy} · ${hh}:${mm}`;
+  const st = $('sidebarTime');
+  if(st) st.textContent = `${hh}:${mm}`;
+}
+updateLiveDate();
+setInterval(updateLiveDate, 30000);
+
+/* ============================================================
+ *  LIVE CALC
+ * ============================================================ */
+$('jumlah').addEventListener('input',()=>{
+  const t = parseFloat($('jumlah').value)||0;
+  $('cCustomer').textContent = usd(t*0.80);
+  $('cAgent').textContent    = usd(t*0.05);
+  $('cOfficial').textContent = usd(t*0.05);
+  $('cCompany').textContent  = usd(t*0.10);
+});
+
+/* ============================================================
+ *  RESET
+ * ============================================================ */
+$('resetBtn').addEventListener('click', ()=>{
+  $('trxForm').reset();
+  clearPhoto_();
+  initDateTime();
+  $('jumlah').dispatchEvent(new Event('input'));
+  $('statusMsg').className = 'status-msg';
+  showToast(t('toast_reset'));
+});
+
+/* ============================================================
+ *  PHOTO UPLOAD
+ * ============================================================ */
+const MAX_PHOTO_BYTES = 5*1024*1024;
+const ALLOWED_MIMES   = ['image/jpeg','image/jpg','image/png'];
+
+function validateAndSetPhoto(file){
+  if(!file) return false;
+  if(!ALLOWED_MIMES.includes(file.type)){ showToast(t('toast_fmt_err')); return false; }
+  if(file.size > MAX_PHOTO_BYTES){ showToast(t('toast_size_err')); return false; }
+
+  const ext = file.type.includes('png') ? 'png' : 'jpg';
+  const stamp = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  const clean = (file.name||'image').replace(/\.[^.]+$/,'').replace(/[^\w\-]/g,'_').slice(0,40);
+  const renamed = new File([file], `${clean}_${stamp}.${ext}`, {type:file.type});
+
+  try{
+    const dt = new DataTransfer();
+    dt.items.add(renamed);
+    $('photo').files = dt.files;
+  }catch(e){ window._pendingPhoto = renamed; }
+
+  const r = new FileReader();
+  r.onload = ev => {
+    $('thumb').src = ev.target.result;
+    $('fName').textContent = renamed.name;
+    $('fSize').textContent = (file.size/1024).toFixed(0) + ' KB';
+    $('uploadInfo').classList.add('show');
+  };
+  r.readAsDataURL(file);
+  showToast(t('toast_img_ready'));
+  return true;
+}
+
+window.clearPhoto_ = function(e){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  $('photo').value = '';
+  window._pendingPhoto = null;
+  $('thumb').src = '';
+  $('uploadInfo').classList.remove('show');
+};
+
+$('photo').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(f) validateAndSetPhoto(f);
+});
+
+(function initDragDrop(){
+  const zone = $('dropZone');
+  let counter = 0;
+  ['dragenter','dragover','drop'].forEach(evt=>{
+    document.addEventListener(evt, e=>{ if(!zone.contains(e.target)) e.preventDefault(); });
+  });
+  zone.addEventListener('dragenter', e=>{ e.preventDefault(); counter++; zone.classList.add('dragover'); });
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', e=>{ e.preventDefault(); counter--; if(counter<=0){counter=0;zone.classList.remove('dragover');} });
+  zone.addEventListener('drop', e=>{
+    e.preventDefault(); counter=0; zone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if(f) validateAndSetPhoto(f);
+  });
+  zone.addEventListener('click', ()=> $('photo').click());
+})();
+
+document.addEventListener('paste', e=>{
+  const items = (e.clipboardData||{}).items||[];
+  for(const item of items){
+    if(item.type && item.type.startsWith('image/')){
+      e.preventDefault();
+      const f = item.getAsFile();
+      if(f) validateAndSetPhoto(f);
+      return;
+    }
+  }
+});
+
+/* ============================================================
+ *  SUBMIT
+ * ============================================================ */
+$('trxForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const btn = $('submitBtn');
+  const msg = $('statusMsg');
+  const file = $('photo').files[0] || window._pendingPhoto;
+
+  btn.disabled = true;
+  msg.className = 'status-msg loading';
+  msg.textContent = t('msg_saving');
+
+  try{
+    let photoBase64='', photoName='', photoType='';
+    if(file){
+      if(file.size > MAX_PHOTO_BYTES) throw new Error(t('toast_size_err'));
+      const dataUrl = await readFileAsDataURL(file);
+      photoBase64 = dataUrl.split(',')[1];
+      photoName = file.name;
+      photoType = file.type;
+    }
+    const payload = {
+      nama: $('nama').value.trim(),
+      agent: $('agent').value.trim(),
+      official: $('official').value.trim(),
+      jumlah: parseFloat($('jumlah').value)||0,
+      status: $('status').value,
+      tanggal: $('tanggal').value,
+      jam: $('jam').value,
+      photoBase64, photoName, photoType
+    };
+    const res = await fetch(WEB_APP_URL,{
+      method:'POST',
+      body: JSON.stringify(payload),
+      headers:{'Content-Type':'text/plain;charset=utf-8'}
+    });
+    const result = await res.json();
+    if(!result.success) throw new Error(result.error||'Failed');
+
+    const recap = {
+      nama: payload.nama, agent: payload.agent, official: payload.official,
+      jumlah: payload.jumlah, status: payload.status,
+      tanggal: payload.tanggal, jam: payload.jam
+    };
+    msg.className='status-msg ok';
+    msg.textContent = t('msg_saved');
+    e.target.reset();
+    clearPhoto_();
+    initDateTime();
+    $('jumlah').dispatchEvent(new Event('input'));
+    showSuccessModal(recap);
+    loadDashboard();
+  }catch(err){
+    msg.className='status-msg err';
+    msg.textContent = err.message;
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+function readFileAsDataURL(f){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  });
+}
+
+/* ============================================================
+ *  SUCCESS MODAL
+ * ============================================================ */
+function showSuccessModal(recap){
+  const jumlah = recap.jumlah || 0;
+  $('modalRecap').innerHTML = `
+    <div class="recap-row"><span class="k">${t('lbl_customer')}</span><span class="v">${esc(recap.nama)}</span></div>
+    <div class="recap-row"><span class="k">${t('lbl_agent')}</span><span class="v">${esc(recap.agent)}</span></div>
+    <div class="recap-row"><span class="k">${t('lbl_official')}</span><span class="v">${esc(recap.official)}</span></div>
+    <div class="recap-row"><span class="k">${t('modal_time')}</span><span class="v">${recap.tanggal} · ${recap.jam}</span></div>
+    <div class="recap-row"><span class="k">${t('modal_status')}</span><span class="v">${esc(recap.status)}</span></div>
+    <div class="recap-row total"><span class="k">${t('modal_total')}</span><span class="v">${usd(jumlah)}</span></div>
+  `;
+  $('successModal').classList.add('show');
+  fireConfetti();
+  sendNativeNotification({
+    title: t('notif_trx_title'),
+    body: `${recap.nama} · ${usd(jumlah)} · ${recap.status}`,
+    tag: 'lhs-trx-'+Date.now()
+  });
+}
+
+function hideSuccessModal(){ $('successModal').classList.remove('show'); }
+$('modalAddAnother').addEventListener('click', ()=>{
+  hideSuccessModal();
+  $('nama').focus();
+  showToast(t('toast_ready'));
+});
+$('modalGoDashboard').addEventListener('click', ()=>{
+  hideSuccessModal();
+  switchView('dashboard');
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') hideSuccessModal(); });
+$('successModal').addEventListener('click', e=>{ if(e.target===$('successModal')) hideSuccessModal(); });
+
+/* ============================================================
+ *  CONFETTI — amber palette
+ * ============================================================ */
+function fireConfetti(opts = {}){
+  const canvas = $('confettiCanvas');
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = window.innerWidth, H = window.innerHeight;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  canvas.classList.add('active');
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const COLORS = ['#C8964A','#E0A957','#8B6A33','#F5F0E6','#B8B0A0'];
+  const COUNT = opts.count || 100;
+  const DURATION = opts.duration || 3200;
+  const START = performance.now();
+  const particles = [];
+  for(let i=0;i<COUNT;i++){
+    particles.push({
+      x: Math.random()*W,
+      y: -20 - Math.random()*80,
+      vx: (Math.random()-0.5)*3,
+      vy: 2 + Math.random()*3.5,
+      size: 4 + Math.random()*7,
+      color: COLORS[Math.floor(Math.random()*COLORS.length)],
+      rot: Math.random()*Math.PI*2,
+      rotSpeed: (Math.random()-0.5)*0.25,
+      shape: Math.floor(Math.random()*2),
+      sway: Math.random()*Math.PI*2,
+      swaySpeed: 0.02 + Math.random()*0.04,
+      swayAmount: 0.6 + Math.random()*1.4
+    });
+  }
+  function draw(p){
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    if(p.shape === 0) ctx.fillRect(-p.size/2, -p.size/3, p.size, p.size*0.66);
+    else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
+  }
+  function animate(now){
+    const elapsed = now - START;
+    ctx.clearRect(0,0,W,H);
+    let alive = 0;
+    particles.forEach(p=>{
+      p.sway += p.swaySpeed;
+      p.x += p.vx + Math.sin(p.sway)*p.swayAmount*0.3;
+      p.y += p.vy;
+      p.rot += p.rotSpeed;
+      p.vy += 0.03;
+      p.vx *= 0.998;
+      let alpha = 1;
+      if(elapsed > DURATION - 800) alpha = Math.max(0, (DURATION - elapsed)/800);
+      ctx.globalAlpha = alpha;
+      draw(p);
+      if(p.y < H + 30 && alpha > 0) alive++;
+    });
+    ctx.globalAlpha = 1;
+    if(alive > 0 && elapsed < DURATION) requestAnimationFrame(animate);
+    else { ctx.clearRect(0,0,W,H); canvas.classList.remove('active'); }
+  }
+  requestAnimationFrame(animate);
+}
+
+/* ============================================================
+ *  NOTIFICATIONS
+ * ============================================================ */
+const NOTIF_PREF_KEY = 'lhs_business_notif_enabled';
+let _notifEnabled = false, _notifSupported = false, _notifPermission = 'default';
+
+(function initNotif(){
+  _notifSupported = ('Notification' in window);
+  if(_notifSupported) _notifPermission = Notification.permission;
+  if(localStorage.getItem(NOTIF_PREF_KEY) === 'true') _notifEnabled = true;
+})();
+
+async function requestNotifPermission(){
+  if(!_notifSupported) return 'unsupported';
+  if(Notification.permission === 'granted'){ _notifPermission='granted'; return 'granted'; }
+  if(Notification.permission === 'denied'){ _notifPermission='denied'; return 'denied'; }
+  try{
+    const r = await Notification.requestPermission();
+    _notifPermission = r;
+    return r;
+  }catch(err){ return 'denied'; }
+}
+
+async function toggleNotification(){
+  if(!_notifSupported){ showToast(t('notif_unsupported')); return; }
+  if(!_notifEnabled){
+    const perm = await requestNotifPermission();
+    if(perm !== 'granted'){
+      _notifEnabled = false;
+      localStorage.setItem(NOTIF_PREF_KEY,'false');
+      updateNotifUI();
+      showToast(perm === 'denied' ? t('notif_denied') : t('notif_failed'));
+      return;
+    }
+    _notifEnabled = true;
+    localStorage.setItem(NOTIF_PREF_KEY,'true');
+    updateNotifUI();
+    showToast(t('notif_on'));
+    sendNativeNotification({title: t('notif_test_title'), body: t('notif_test_body')});
+  } else {
+    _notifEnabled = false;
+    localStorage.setItem(NOTIF_PREF_KEY,'false');
+    updateNotifUI();
+    showToast(t('notif_off'));
+  }
+}
+
+function updateNotifUI(){
+  const sw = $('notifSwitch'), status = $('notifStatus');
+  if(!sw || !status) return;
+  if(!_notifSupported){
+    sw.classList.add('disabled'); sw.classList.remove('on');
+    sw.setAttribute('aria-checked','false');
+    status.className = 'notif-status warn';
+    status.textContent = t('notif_unsupported_hint');
+    return;
+  }
+  if(_notifPermission === 'denied'){
+    sw.classList.add('disabled'); sw.classList.remove('on');
+    sw.setAttribute('aria-checked','false');
+    status.className = 'notif-status warn';
+    status.textContent = t('notif_blocked_hint');
+    return;
+  }
+  sw.classList.remove('disabled');
+  sw.classList.toggle('on', _notifEnabled);
+  sw.setAttribute('aria-checked', _notifEnabled ? 'true' : 'false');
+  status.className = _notifEnabled ? 'notif-status ok' : 'notif-status';
+  status.textContent = _notifEnabled ? t('notif_status_on') : t('notif_status_off');
+}
+
+function sendNativeNotification({title, body, tag}){
+  if(!_notifEnabled || !_notifSupported) return;
+  if(Notification.permission !== 'granted') return;
+  const opts = {
+    body: body || '',
+    icon: 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" rx="24" fill="#0F0E0C"/><text x="64" y="88" font-size="72" text-anchor="middle" font-family="serif" fill="#C8964A">L</text></svg>'),
+    tag: tag || ('lhs-'+Date.now()),
+    silent: false
+  };
+  try{
+    const n = new Notification(title || 'LHS Business Monitoring', opts);
+    setTimeout(()=>{ try{ n.close(); }catch(_){} }, 8000);
+    n.onclick = ()=>{ try{ window.focus(); n.close(); }catch(_){} };
+    return n;
+  }catch(err){ return null; }
+}
+
+$('notifSwitch')?.addEventListener('click', toggleNotification);
+$('notifSwitch')?.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleNotification(); }
+});
+
+/* ============================================================
+ *  DATA
+ * ============================================================ */
+let ALL_RECORDS = [];
+let FILTER_MONTH = '';
+
+async function loadDashboard(){
+  const box = $('dashContent');
+  box.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>'+t('msg_loading')+'</div>';
+  try{
+    const res = await fetch(WEB_APP_URL+'?action=dashboard');
+    const data = await res.json();
+    if(!data.success){
+      box.innerHTML = '<div class="empty">'+t('msg_failed')+'</div>';
+      return;
+    }
+    if(data.empty){
+      box.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>'+t('msg_empty')+'</div>';
+      return;
+    }
+    ALL_RECORDS = data.records || [];
+    populateMonthFilter();
+    renderDashboard();
+  }catch(err){
+    box.innerHTML = '<div class="empty">'+t('msg_error')+': '+err.message+'</div>';
+  }
+}
+
+function populateMonthFilter(){
+  const months = [...new Set(ALL_RECORDS.map(r=>r.bulan))].sort().reverse();
+  const namesMap = {
+    en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    id:['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
+    ms:['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis']
+  };
+  const names = namesMap[CURRENT_LANG] || namesMap.en;
+  const opts = `<option value="">${t('tb_all_months')}</option>` +
+    months.map(m=>{
+      const [y,mo] = m.split('-');
+      return `<option value="${m}">${names[parseInt(mo,10)-1]} ${y}</option>`;
+    }).join('');
+  ['monthFilter','monthFilterTrx','monthFilterRank','monthFilterExport'].forEach(id=>{
+    const el = $(id);
+    if(!el) return;
+    const cur = el.value;
+    el.innerHTML = opts;
+    el.value = months.includes(cur) ? cur : '';
+  });
+}
+
+function getFiltered(month){
+  if(!month) return ALL_RECORDS;
+  return ALL_RECORDS.filter(r=>r.bulan===month);
+}
+
+/* ============================================================
+ *  RENDER: DASHBOARD
+ * ============================================================ */
+function renderDashboard(){
+  const box = $('dashContent');
+  const records = getFiltered(FILTER_MONTH);
+  if(!records.length){
+    box.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>'+t('msg_no_data')+'</div>';
+    return;
+  }
+  let totalUang=0, totalAgent=0;
+  const custSet = new Set();
+  const custMap={}, agentMap={}, offMap={};
+  records.forEach(r=>{
+    totalUang += r.jumlah;
+    totalAgent += r.agentFee;
+    if(r.customer) custSet.add(r.customer);
+    if(r.customer){custMap[r.customer]=custMap[r.customer]||{name:r.customer,count:0,uang:0};custMap[r.customer].count++;custMap[r.customer].uang+=r.jumlah;}
+    if(r.agent){agentMap[r.agent]=agentMap[r.agent]||{name:r.agent,count:0,fee:0};agentMap[r.agent].count++;agentMap[r.agent].fee+=r.agentFee;}
+    if(r.official){offMap[r.official]=offMap[r.official]||{name:r.official,count:0,fee:0};offMap[r.official].count++;offMap[r.official].fee+=r.officialFee;}
+  });
+  const topN = (obj,key,n)=>Object.values(obj).sort((a,b)=>b[key]-a[key]).slice(0,n);
+  const topCust = topN(custMap,'uang',10);
+  const topAgt  = topN(agentMap,'fee',10);
+  const topOff  = topN(offMap,'fee',10);
+
+  let html = '';
+  html += '<div class="stats-grid">';
+  html += statCard(t('stat_total_log'), records.length.toLocaleString('en-US'), '');
+  html += statCard(t('stat_total_trx'), records.length, '');
+  html += statCard(t('stat_total_comm'), usd(totalAgent), 'accent');
+  html += statCard(t('stat_total_cust'), custSet.size, '');
+  html += '</div>';
+
+  html += '<div class="section-head"><div class="section-title">'+t('rank_section')+'</div>';
+  html += '<div class="tabs">';
+  html += '<button class="tab active" data-rtab="customer">'+t('rank_tab_customer')+'</button>';
+  html += '<button class="tab" data-rtab="agent">'+t('rank_tab_agent')+'</button>';
+  html += '<button class="tab" data-rtab="official">'+t('rank_tab_official')+'</button>';
+  html += '</div></div>';
+  html += '<div id="rankTabContent">'+renderRankTable(topCust,'uang')+'</div>';
+
+  html += '<div class="section-head"><div class="section-title">'+t('recent_section')+'</div></div>';
+  html += renderRecentTable(records.slice().reverse().slice(0,5));
+
+  box.innerHTML = html;
+
+  document.querySelectorAll('.tab[data-rtab]').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.tab[data-rtab]').forEach(x=>x.classList.remove('active'));
+      tab.classList.add('active');
+      const key = tab.dataset.rtab;
+      let list, mode;
+      if(key==='customer'){ list=topCust; mode='uang'; }
+      else if(key==='agent'){ list=topAgt; mode='fee'; }
+      else { list=topOff; mode='fee'; }
+      $('rankTabContent').innerHTML = renderRankTable(list, mode);
+    });
+  });
+}
+
+function statCard(label, val, cls){
+  return `<div class="stat">
+    <div class="stat-label">${label}</div>
+    <div class="stat-value ${cls||''}">${val}</div>
+    <div class="stat-trend">${t('stat_trend')}</div>
+  </div>`;
+}
+
+function renderRankTable(list, mode){
+  if(!list.length) return '<div class="empty">'+t('msg_no_month')+'</div>';
+  let h = '<div class="table-wrap"><table><thead><tr>';
+  h += '<th style="width:40px">#</th><th>'+t('rank_name')+'</th><th class="center" style="width:70px">'+t('rank_log')+'</th><th class="right" style="width:100px">'+t('rank_total')+'</th>';
+  h += '</tr></thead><tbody>';
+  list.forEach((it,i)=>{
+    const posCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const val = mode==='uang' ? usd(it.uang) : usd(it.fee);
+    h += `<tr>
+      <td class="rank-pos ${posCls}">${i+1}</td>
+      <td class="rank-name">${esc(it.name)}</td>
+      <td class="center rank-count">${it.count}</td>
+      <td class="rank-value">${val}</td>
+    </tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+
+function renderRecentTable(records){
+  if(!records.length) return '<div class="empty">'+t('msg_no_month')+'</div>';
+  let h = '<div class="table-wrap"><table><thead><tr>';
+  h += '<th>'+t('tbl_date')+'</th><th>'+t('tbl_customer')+'</th><th>'+t('tbl_agent')+'</th>';
+  h += '<th class="right">'+t('tbl_amount')+'</th><th>'+t('tbl_status')+'</th>';
+  h += '</tr></thead><tbody>';
+  records.forEach(r=>{
+    const badge = r.status.toLowerCase()==='selesai'?'selesai':'pending';
+    h += `<tr>
+      <td class="mono">${fmtDate(r.tanggal)} ${esc(r.jam)}</td>
+      <td>${esc(r.customer)}</td>
+      <td>${esc(r.agent)}</td>
+      <td class="right">${usd(r.jumlah)}</td>
+      <td><span class="badge ${badge}">${esc(r.status)}</span></td>
+    </tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ============================================================
+ *  TRANSACTIONS
+ * ============================================================ */
+$('monthFilterTrx').addEventListener('change', renderTransactionsView);
+function renderTransactionsView(){
+  const m = $('monthFilterTrx').value;
+  const records = getFiltered(m).slice().reverse();
+  $('filterInfoTrx').textContent = t('filter_info',{n:records.length});
+  const box = $('trxContent');
+  if(!records.length){ box.innerHTML = '<div class="empty">'+t('msg_no_month')+'</div>'; return; }
+  let h = '<div class="table-wrap"><table><thead><tr>';
+  h += '<th>'+t('tbl_date')+'</th><th>'+t('tbl_customer')+'</th><th>'+t('tbl_agent')+'</th><th>'+t('tbl_official')+'</th>';
+  h += '<th class="right">'+t('tbl_amount')+'</th><th>'+t('tbl_status')+'</th>';
+  h += '</tr></thead><tbody>';
+  records.forEach(r=>{
+    const badge = r.status.toLowerCase()==='selesai'?'selesai':'pending';
+    h += `<tr>
+      <td class="mono">${r.tanggal} · ${esc(r.jam)}</td>
+      <td>${esc(r.customer)}</td>
+      <td>${esc(r.agent)}</td>
+      <td>${esc(r.official)}</td>
+      <td class="right">${usd(r.jumlah)}</td>
+      <td><span class="badge ${badge}">${esc(r.status)}</span></td>
+    </tr>`;
+  });
+  box.innerHTML = h+'</tbody></table></div>';
+}
+
+/* ============================================================
+ *  RANK VIEW
+ * ============================================================ */
+$('monthFilterRank').addEventListener('change', renderRankView);
+function renderRankView(){
+  const m = $('monthFilterRank').value;
+  const records = getFiltered(m);
+  $('filterInfoRank').textContent = t('filter_info',{n:records.length});
+  const box = $('rankContent');
+  if(!records.length){ box.innerHTML = '<div class="empty">'+t('msg_no_month')+'</div>'; return; }
+  const custMap={},agentMap={},offMap={};
+  records.forEach(r=>{
+    if(r.customer){custMap[r.customer]=custMap[r.customer]||{name:r.customer,count:0,uang:0};custMap[r.customer].count++;custMap[r.customer].uang+=r.jumlah;}
+    if(r.agent){agentMap[r.agent]=agentMap[r.agent]||{name:r.agent,count:0,fee:0};agentMap[r.agent].count++;agentMap[r.agent].fee+=r.agentFee;}
+    if(r.official){offMap[r.official]=offMap[r.official]||{name:r.official,count:0,fee:0};offMap[r.official].count++;offMap[r.official].fee+=r.officialFee;}
+  });
+  const topN=(obj,key)=>Object.values(obj).sort((a,b)=>b[key]-a[key]).slice(0,20);
+  let h = '';
+  h += '<div class="section-head"><div class="section-title">'+t('rank_tab_customer')+'</div></div>'+renderRankTable(topN(custMap,'uang'),'uang');
+  h += '<div class="section-head"><div class="section-title">'+t('rank_tab_agent')+'</div></div>'+renderRankTable(topN(agentMap,'fee'),'fee');
+  h += '<div class="section-head"><div class="section-title">'+t('rank_tab_official')+'</div></div>'+renderRankTable(topN(offMap,'fee'),'fee');
+  box.innerHTML = h;
+}
+
+/* ============================================================
+ *  MONTHLY
+ * ============================================================ */
+function renderMonthlyView(){
+  const box = $('monthlyContent');
+  if(!ALL_RECORDS.length){ box.innerHTML = '<div class="empty">'+t('msg_no_month')+'</div>'; return; }
+  const map = {};
+  ALL_RECORDS.forEach(r=>{
+    if(!map[r.bulan]) map[r.bulan]={month:r.bulan,count:0,uang:0,customer:0,agent:0,official:0,company:0};
+    const m = map[r.bulan];
+    m.count++; m.uang+=r.jumlah;
+    m.customer+=r.customerFee; m.agent+=r.agentFee;
+    m.official+=r.officialFee; m.company+=r.companyFee;
+  });
+  const monthly = Object.values(map).sort((a,b)=>b.month.localeCompare(a.month));
+  let h = '<div class="table-wrap"><table><thead><tr>';
+  h += '<th>'+t('monthly_month')+'</th><th class="right">'+t('monthly_entries')+'</th><th class="right">'+t('monthly_total')+'</th>';
+  h += '<th class="right">'+t('rank_tab_customer')+'</th><th class="right">'+t('rank_tab_agent')+'</th>';
+  h += '<th class="right">'+t('rank_tab_official')+'</th><th class="right">'+t('calc_company')+'</th>';
+  h += '</tr></thead><tbody>';
+  monthly.forEach(m=>{
+    h += `<tr>
+      <td><strong>${fmtMonthFull(m.month)}</strong></td>
+      <td class="right">${m.count}</td>
+      <td class="right">${usd(m.uang)}</td>
+      <td class="right">${usd(m.customer)}</td>
+      <td class="right">${usd(m.agent)}</td>
+      <td class="right">${usd(m.official)}</td>
+      <td class="right">${usd(m.company)}</td>
+    </tr>`;
+  });
+  box.innerHTML = h+'</tbody></table></div>';
+}
+
+/* ============================================================
+ *  EXPORT
+ * ============================================================ */
+$('monthFilterExport').addEventListener('change', renderExportView);
+function renderExportView(){
+  const m = $('monthFilterExport').value;
+  const records = getFiltered(m);
+  $('filterInfoExport').textContent = records.length
+    ? `${records.length} ${t('export_ready')}${m?' · '+fmtMonthFull(m):''}`
+    : t('msg_no_month');
+}
+$('exportCsvBtn').addEventListener('click', ()=>{
+  const m = $('monthFilterExport').value;
+  const records = getFiltered(m);
+  if(!records.length){ alert(t('msg_no_export')); return; }
+  const headers = ['Tanggal','Jam','Customer','Agent','Official','Jumlah ($)','Status',
+                   'Customer 80%','Agent 5%','Official 5%','Company 10%'];
+  const rows = records.map(r=>[
+    r.tanggal, r.jam, r.customer, r.agent, r.official,
+    r.jumlah.toFixed(2), r.status,
+    r.customerFee.toFixed(2), r.agentFee.toFixed(2),
+    r.officialFee.toFixed(2), r.companyFee.toFixed(2)
+  ]);
+  const csv = [headers,...rows].map(row=>row.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'LHS_BusinessMonitoring_'+(m||'AllMonths')+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast(t('toast_csv_ok'));
+});
+
+/* ============================================================
+ *  HELPERS
+ * ============================================================ */
+function fmtDate(iso){
+  const [y,m,d] = iso.split('-');
+  const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(d,10)} ${names[parseInt(m,10)-1]}`;
+}
+function fmtMonthFull(ym){
+  const [y,m] = ym.split('-');
+  const namesMap = {
+    en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    id:['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
+    ms:['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember']
+  };
+  const names = namesMap[CURRENT_LANG] || namesMap.en;
+  return names[parseInt(m,10)-1]+' '+y;
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(msg){
+  let tt = document.getElementById('toast');
+  if(!tt){ tt=document.createElement('div'); tt.id='toast'; tt.className='toast'; document.body.appendChild(tt); }
+  tt.textContent = msg;
+  tt.classList.add('show');
+  clearTimeout(tt._timer);
+  tt._timer = setTimeout(()=>tt.classList.remove('show'), 2400);
+}
+
+/* ============================================================
+ *  BOOT
+ * ============================================================ */
+applyLanguage(CURRENT_LANG);
+updateNotifUI();
+loadDashboard();
+</script>
+</body>
+</html>
