@@ -1672,12 +1672,15 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>{
 /* ============================================================
  *  INIT DATE
  * ============================================================ */
-(function initDateTime(){
+function initDateTime(){
   const now = new Date();
   const pad = n => String(n).padStart(2,'0');
   $('tanggal').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
   $('jam').value = pad(now.getHours())+':'+pad(now.getMinutes());
-})();
+}
+
+// Panggil saat pertama load
+initDateTime();
 
 function updateLiveDate(){
   const d = new Date();
