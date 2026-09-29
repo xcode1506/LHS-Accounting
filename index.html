@@ -1377,7 +1377,7 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text
 /* ============================================================
  *  CONFIG
  * ============================================================ */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzUK6dlWzxCx1xqvgYXB5XHzROgMNMt95hQbO2lkc8rixL2CmtLtfAK2z9B_lYeTQhB/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw0MkSA_ePcMt3roxnUBGWzlEtnfuoBjpYhM2W6F1h2DvPSsIcrpxbt2J7LndIjwIgA/exec';
 
 const $ = id => document.getElementById(id);
 const usd = n => '$' + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1672,15 +1672,12 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>{
 /* ============================================================
  *  INIT DATE
  * ============================================================ */
-function initDateTime(){
+(function initDateTime(){
   const now = new Date();
   const pad = n => String(n).padStart(2,'0');
   $('tanggal').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
   $('jam').value = pad(now.getHours())+':'+pad(now.getMinutes());
-}
-
-// Panggil saat pertama load
-initDateTime();
+})();
 
 function updateLiveDate(){
   const d = new Date();
