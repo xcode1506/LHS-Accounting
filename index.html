@@ -2185,12 +2185,19 @@ function applyLanguage(lang){
 
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const v = t(el.getAttribute('data-i18n'));
-    if(v) el.textContent = v;
+    if(!v) return;
+    if(/<[a-z][\s\S]*>/i.test(v)){
+      el.innerHTML = v;
+    } else {
+      el.textContent = v;
+    }
   });
+
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{
     const v = t(el.getAttribute('data-i18n-html'));
     if(v) el.innerHTML = v;
   });
+
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
     const v = t(el.getAttribute('data-i18n-ph'));
     if(v) el.placeholder = v;
